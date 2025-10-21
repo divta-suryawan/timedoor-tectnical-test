@@ -2,14 +2,15 @@
 
 namespace App\Interface;
 
+use App\Http\Requests\RatingRequest;
 use Illuminate\Http\Request;
 
 interface RatingInterfaces
 {
+    public function createData(RatingRequest $request);
+    // if you need to read,upadate,and delete rating  use the Function below
     public function getAllData();
-    public function createData(Request $request);
-    // if you need to update and rating  use the Funcion below
     public function getDataById($id);
-    public function updateData(Request $request, $id);
+    public function updateData(RatingRequest $request, $id);
     public function deleteData($id);
 }

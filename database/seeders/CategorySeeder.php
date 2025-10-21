@@ -3,28 +3,61 @@
 namespace Database\Seeders;
 
 use Faker\Factory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // create 3000 categories
+        DB::disableQueryLog();
         $faker = Factory::create();
-        $categories = [];
+        $totalCategories = 3000;
+        $batchSize = 500;
+        // generate unique words for categories
+        $uniqueWords = $this->generateUniqueWords($totalCategories, $faker);
 
-        for ($i = 0; $i < 3000; $i++) {
-            $categories[] = [
-                'id' => Str::uuid(),
-                'name' => ucfirst($faker->word()),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+        for ($i = 0; $i < $totalCategories; $i += $batchSize) {
+            $currentBatch = min($batchSize, $totalCategories - $i);
+            $batchData = [];
+            // generate data for each batch
+            for ($j = 0; $j < $currentBatch; $j++) {
+                $index = $i + $j;
+                $batchData[] = [
+                    'id' => Str::orderedUuid(),
+                    'name' => ucfirst($uniqueWords[$index]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            // insert data
+            DB::table('categories')->insert($batchData);
+            // read the proses generate data
+            $this->command->info("Categories: " . ($i + $currentBatch) . "/{$totalCategories}");
         }
-        // insert to table categories
-        DB::table('categories')->insert($categories);
+
+        $this->command->info("✅ Categories completed!");
+    }
+
+    private function generateUniqueWords($count, $faker): array
+    {
+        $words = [];
+        $attempts = 0;
+        $maxAttempts = $count * 3;
+
+        while (count($words) < $count && $attempts < $maxAttempts) {
+            $word = $faker->word();
+            if (!in_array($word, $words)) {
+                $words[] = $word;
+            }
+            $attempts++;
+        }
+
+        while (count($words) < $count) {
+            $words[] = $faker->word() . '_' . count($words);
+        }
+
+        return $words;
     }
 }

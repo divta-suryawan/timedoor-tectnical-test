@@ -14,6 +14,7 @@ class RatingModel extends Model
 
     protected $fillable = [
         'id',
+        'author_id',
         'book_id',
         'score',
         'created_at',

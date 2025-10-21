@@ -28,20 +28,28 @@ class BookRepositories implements BookInterfaces
     public function getAllData()
     {
         try {
+            // query to get all data from the table book
             $data = DB::table('books')
                 ->select(
                     'books.id',
                     'books.title',
                     'authors.name as author_name',
                     'categories.name as category_name',
-                    DB::raw('COUNT(ratings.id) as total_vote'),
-                    DB::raw('IFNULL(AVG(ratings.score), 0) as rating_avg_score')
+                    DB::raw('COALESCE(ratings_summary.total_vote, 0) as total_vote'),
+                    DB::raw('COALESCE(ratings_summary.rating_avg_score, 0) as rating_avg_score')
                 )
                 ->join('authors', 'books.author_id', '=', 'authors.id')
                 ->join('categories', 'books.category_id', '=', 'categories.id')
-                ->leftJoin('ratings', 'books.id', '=', 'ratings.book_id')
-                ->groupBy('books.id', 'books.title', 'authors.name', 'categories.name')
+                ->leftJoin(DB::raw('(
+                SELECT
+                    book_id,
+                    COUNT(id) as total_vote,
+                    AVG(score) as rating_avg_score
+                FROM ratings
+                GROUP BY book_id
+            ) as ratings_summary'), 'books.id', '=', 'ratings_summary.book_id')
                 ->orderByDesc('rating_avg_score')
+                ->orderByDesc('total_vote')
                 ->limit(100)
                 ->get();
 
@@ -50,7 +58,6 @@ class BookRepositories implements BookInterfaces
             return $this->error('Failed to retrieve books data.', 400, $th, class_basename($this), __FUNCTION__);
         }
     }
-
 
     // if you need create CRUD in the table book pleade use function bellow
     public function getDataById($id) {}

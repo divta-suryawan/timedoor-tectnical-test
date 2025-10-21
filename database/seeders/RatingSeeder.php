@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Faker\Factory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -12,32 +11,44 @@ class RatingSeeder extends Seeder
 {
     public function run(): void
     {
-        // Generate random ratings for 500000 books
-        $faker = Factory::create();
-        // Get all book IDs
-        $bookIds = DB::table('books')->pluck('id')->toArray();
-
-        // Create 500000 ratings
-        $ratings = [];
+        DB::disableQueryLog();
+        $totalRatings = 500000;
         $batchSize = 5000;
-        // Loop through the books and generate ratings
-        for ($i = 0; $i < 500000; $i++) {
+        $bookIds = [];
+        $authorMap = [];
+        // get all books and authors
+        $books = DB::table('books')->select('id', 'author_id')->cursor();
+        // loop through books and get the author id
+        foreach ($books as $book) {
+            $bookIds[] = $book->id;
+            $authorMap[$book->id] = $book->author_id;
+        }
+        // generate ratings
+        $ratings = [];
+        for ($i = 1; $i <= $totalRatings; $i++) {
+            $randomBookId = $bookIds[array_rand($bookIds)];
+            //
             $ratings[] = [
-                'id' => Str::uuid(),
-                'book_id' => $faker->randomElement($bookIds),
+                'id' => Str::orderedUuid(),
+                'book_id' => $randomBookId,
+                'author_id' => $authorMap[$randomBookId],
                 'score' => rand(1, 10),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-            // Insert the ratings in batches
+
             if (count($ratings) >= $batchSize) {
+                // insert the ratings
                 DB::table('ratings')->insert($ratings);
                 $ratings = [];
+                // read the proses generate data
+                $this->command->info("Ratings: {$i}/{$totalRatings}");
             }
         }
-        // Insert any remaining ratings
+        // insert the remaining ratings
         if (!empty($ratings)) {
             DB::table('ratings')->insert($ratings);
         }
+        $this->command->info("✅ Ratings completed!");
     }
 }

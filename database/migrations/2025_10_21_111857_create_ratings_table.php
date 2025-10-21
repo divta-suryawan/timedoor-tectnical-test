@@ -6,22 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('ratings', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('book_id')->constrained('books')->cascadeOnDelete('cascade');
-            $table->tinyInteger('score')->unsigned();
+            $table->uuid('book_id');
+            $table->uuid('author_id');
+            $table->integer('score'); // 1-10
             $table->timestamps();
+
+            $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade');
+            $table->foreign('author_id')->references('id')->on('authors')->onDelete('cascade');
+
+            $table->index('book_id');
+            $table->index('author_id');
+            $table->index('score');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('ratings');
