@@ -5,6 +5,20 @@ use App\Http\Controllers\CMS\BookController;
 use App\Http\Controllers\CMS\RatingController;
 use Illuminate\Support\Facades\Route;
 
+// web route
+Route::get('/', function () {
+    return view('pages.book');
+});
+
+Route::get('/author', function () {
+    return view('pages.author');
+});
+
+Route::get('/rating', function () {
+    return view('pages.rating');
+});
+
+// api route
 Route::prefix('timedoor-test')->group(function () {
     // route api book
     Route::prefix('books')->controller(BookController::class)->group(function () {
