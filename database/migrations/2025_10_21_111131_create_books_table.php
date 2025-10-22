@@ -11,15 +11,14 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('title');
-            $table->uuid('author_id');
-            $table->uuid('category_id');
             $table->timestamps();
 
-            $table->foreign('author_id')->references('id')->on('authors')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->foreignUuid('author_id')->references('id')->on('authors')->onDelete('cascade');
+            $table->foreignUuid('category_id')->references('id')->on('categories')->onDelete('cascade');
 
             $table->index('author_id');
             $table->index('category_id');
+            $table->index(['author_id', 'category_id']);
         });
     }
 

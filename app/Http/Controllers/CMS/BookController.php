@@ -16,9 +16,9 @@ class BookController extends Controller
         $this->bookRepositories = $bookRepositories;
     }
     // Define a method to get all data from the database
-    public function getAllData()
+    public function getAllData(Request $request)
     {
-        return $this->bookRepositories->getAllData();
+        return $this->bookRepositories->getAllData($request);
     }
 
     // if you need create CRUD in the table book pleade use function bellow

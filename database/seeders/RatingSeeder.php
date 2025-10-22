@@ -17,11 +17,10 @@ class RatingSeeder extends Seeder
         $bookIds = [];
         $authorMap = [];
         // get all books and authors
-        $books = DB::table('books')->select('id', 'author_id')->cursor();
+        $books = DB::table('books')->select('id')->cursor();
         // loop through books and get the author id
         foreach ($books as $book) {
             $bookIds[] = $book->id;
-            $authorMap[$book->id] = $book->author_id;
         }
         // generate ratings
         $ratings = [];
@@ -31,7 +30,6 @@ class RatingSeeder extends Seeder
             $ratings[] = [
                 'id' => Str::orderedUuid(),
                 'book_id' => $randomBookId,
-                'author_id' => $authorMap[$randomBookId],
                 'score' => rand(1, 10),
                 'created_at' => now(),
                 'updated_at' => now(),

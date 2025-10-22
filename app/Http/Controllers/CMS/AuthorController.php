@@ -16,9 +16,17 @@ class AuthorController extends Controller
     {
         $this->authorRepo = $authorRepo;
     }
+    public function getAllAuthors()
+    {
+        return $this->authorRepo->getAllAuthors();
+    }
     public function getTopAuthors()
     {
         return $this->authorRepo->getTopAuthors();
+    }
+    public function getBooksByAuthor($authorId)
+    {
+        return $this->authorRepo->getBooksByAuthor($authorId);
     }
     // if you need create CRUD in the table Author pleade use function bellow
     public function getDataById($id) {}

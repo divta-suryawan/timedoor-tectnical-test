@@ -26,7 +26,6 @@ class RatingRepositories implements RatingInterfaces
         try {
             $data = new $this->ratingModel;
             $data->book_id = $request->input('book_id');
-            $data->author_id = $request->input('author_id');
             $data->score = $request->input('score');
             $data->save();
             return $this->success($data, 'Rating created successfully');

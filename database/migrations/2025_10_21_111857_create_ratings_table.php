@@ -10,17 +10,13 @@ return new class extends Migration
     {
         Schema::create('ratings', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('book_id');
-            $table->uuid('author_id');
-            $table->integer('score'); // 1-10
+            $table->integer('score');
             $table->timestamps();
-
-            $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade');
-            $table->foreign('author_id')->references('id')->on('authors')->onDelete('cascade');
+            $table->foreignUuid('book_id')->references('id')->on('books')->onDelete('cascade');
 
             $table->index('book_id');
-            $table->index('author_id');
             $table->index('score');
+            $table->index(['book_id', 'score']);
         });
     }
 

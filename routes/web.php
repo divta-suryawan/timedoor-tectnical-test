@@ -17,7 +17,9 @@ Route::prefix('timedoor-test')->group(function () {
         Route::delete('/delete/{id}', 'deleteData');
     });
     Route::prefix('authors')->controller(AuthorController::class)->group(function () {
-        Route::get('/', 'getTopAuthors');
+        Route::get('/', 'getAllAuthors');
+        Route::get('/top', 'getTopAuthors');
+        Route::get('/{id}/books', 'getBooksByAuthor');
 
         // if you already funtion CRUD author use the route bellow
         Route::post('/create', 'createData');

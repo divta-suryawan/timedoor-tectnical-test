@@ -17,7 +17,6 @@ class RatingRequest extends FormRequest
     {
         return [
             'book_id'   => 'required|exists:books,id',
-            'author_id' => 'required|exists:authors,id',
             'score'     => 'required|integer|between:1,10',
         ];
     }
@@ -27,8 +26,6 @@ class RatingRequest extends FormRequest
         return [
             'book_id.required'   => 'Book Name is required.',
             'book_id.exists'     => 'Book Name not found in the database.',
-            'author_id.required' => 'Author Name is required.',
-            'author_id.exists'   => 'Author Name not found in the database.',
             'score.required'     => 'Score is required.',
             'score.integer'      => 'Score must be an integer.',
             'score.between'      => 'Score must be between 1 and 10.',
