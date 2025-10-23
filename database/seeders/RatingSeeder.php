@@ -48,5 +48,23 @@ class RatingSeeder extends Seeder
             DB::table('ratings')->insert($ratings);
         }
         $this->command->info("✅ Ratings completed!");
+
+        // update book_ratings_summary otomatis
+        DB::statement("
+            INSERT INTO book_ratings_summary (book_id, total_vote, rating_avg_score, updated_at)
+            SELECT
+                book_id,
+                COUNT(*) AS total_vote,
+                ROUND(AVG(score),2) AS rating_avg_score,
+                NOW()
+            FROM ratings
+            GROUP BY book_id
+            ON DUPLICATE KEY UPDATE
+                total_vote=VALUES(total_vote),
+                rating_avg_score=VALUES(rating_avg_score),
+                updated_at=NOW()
+        ");
+
+        $this->command->info("✅ Book ratings summary updated!");
     }
 }
